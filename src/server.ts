@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {Request, Response} from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -31,13 +31,34 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   //! END @TODO1
   
+  app.get("/filteredimage", async (req: Request, res: Response) => {
+  
+  const {image_url} = req.query;
+  if (!image_url.trim().length) {
+    return res.status(422).send("Kindly provide Image url");
+  }
+
+    try {
+      const filteredpath = await filterImageFromURL(req.query.image_url);
+      res.sendFile(filteredpath);
+     //Delay delete after filtered image has been sent
+      setTimeout(() => {
+        deleteLocalFiles([filteredpath]);
+      }, 1000);
+    } catch (error) {
+      
+        res.status(422).send("Error encountered while processing image");
+    }
+  });
+  
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
-  
 
+  
+  
   // Start the Server
   app.listen( port, () => {
       console.log( `server running http://localhost:${ port }` );

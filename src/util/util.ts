@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios"; //this idea was gotten from ALX slack
 import fs from "fs";
 import Jimp = require("jimp");
 
